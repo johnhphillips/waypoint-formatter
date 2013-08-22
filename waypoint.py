@@ -1,5 +1,8 @@
 import xlrd
 
+excelx = ".xlsx"
+inix = ".ini"
+
 class Waypoint:
 	locationLabel = '#'
 	location = '[Location]'
@@ -27,8 +30,11 @@ def setOffDistance(point, dis):
 def setOffYaxis(point, axis):
 	point.offYaxis += axis
 
+fname = 'filename' 
+fname = fname + excelx
+
 # Open the Excel workbook (for now this is hard coded, will add prompt for user input)
-book = xlrd.open_workbook('C:\Users\jphilips\Desktop\ATLAS_minefield_configurations_v05.xlsx',on_demand=True)
+book = xlrd.open_workbook(fname, on_demand = True)
 
 print
 print "Number of sheets in workbook: ", book.nsheets
