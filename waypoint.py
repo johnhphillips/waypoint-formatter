@@ -1,7 +1,15 @@
+
+'''
+Script that opens Excel workbook, using xlrd module, moves through each worksheet
+looking for target data (target name, latitude, and longitude). Saves in list of target
+and formats as 'Local waypoints' for use in VIP. Input is file name, provided by user. 
+Output is waypoint ini files, one for each worksheet containing target information.
+''' 
+
 import xlrd
 
-excelx = ".xlsx"
-inix = ".ini"
+excelX = ".xlsx"
+iniX = ".ini"
 
 class Waypoint:
 	locationLabel = '#'
@@ -30,10 +38,13 @@ def setOffDistance(point, dis):
 def setOffYaxis(point, axis):
 	point.offYaxis += axis
 
-fname = 'ATLAS_minefield_configurations_v05'
+print 'Make sure script and spreadsheet are in the same directory (on the desktop)'
+print
+
+fname = raw_input('Enter file name: ')
 fname = fname + excelx
 
-# Open the Excel workbook based on console input
+# Open the Excel workbook based on user input
 try:
 	book = xlrd.open_workbook(fname, on_demand=True)
 except IOError as e:
@@ -46,25 +57,26 @@ except IOError as e:
 print
 print 'Number of sheets in ', fname, ': ', book.nsheets
 
-# Open sheets 
+# Iterate through sheets in workbook looking for target data 
 for sheet in range(book.nsheets):
 	dataPresent = False
+	# Open sheet
 	sh = book.sheet_by_index(sheet)
 	print
-	print "Opening: ", sh.name
+	print "Opening:", sh.name
 	print
 
 	# sh.name -> sheet name, used for target field label #LABEL
-	# sh.nrows, sh.ncols -> give number of rows and columns
+	# sh.nrows, sh.ncols -> returns number of rows and columns
 
-	# List to hold waypoint information
+	# Initialize list to hold waypoint information
 	waypoints = []
-	# Set up list to hold target information
+	# Initialize list to hold target information
 	targets = []
 
 	# Collect target names and add to waypoint list
 	for column in range(sh.ncols):
-		# Check for right column 
+		# Check for right column based on label
 		if sh.cell_value(rowx=0, colx=column) == u'Target ID':
 			dataPresent = True
 			for row in range(sh.nrows):
@@ -72,9 +84,11 @@ for sheet in range(book.nsheets):
 				if row !=0:
 					# Create list to hold target information
 					target = []
-					# Save target name and set to all CAPS
+					# Save target name
 					targetName = sh.cell_value(rowx=row, colx=column)
+					# Strip off any special characters (degree symbol)
 					targetName = targetName.encode('ascii', 'ignore')
+					# Set to all CAPS
 					targetName = targetName.upper()	
 					# Add target name to list
 					target.append(targetName)
@@ -142,6 +156,8 @@ for sheet in range(book.nsheets):
 	if dataPresent:
 		# Build output file name
 		outputName = sh.name + inix
+		print 'Building:', outputName
+		print
 		# Create / open output file in write mode
 		fout = open(outputName, 'w')
 	
@@ -158,3 +174,10 @@ for sheet in range(book.nsheets):
 
 		# Close output file
 		fout.close()
+	else:
+		print 'No waypoint data present'
+		print
+	print 'Closing:', sh.name
+	print 
+# End
+raw_input('Press any key to exit')
