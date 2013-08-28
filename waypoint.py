@@ -8,8 +8,8 @@ Output is waypoint ini files, one for each worksheet containing target informati
 
 import xlrd
 
-excelX = ".xlsx"
-iniX = ".ini"
+excelx = '.xlsx'
+inix = '.ini'
 
 class Waypoint:
 	locationLabel = '#'
